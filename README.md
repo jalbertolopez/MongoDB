@@ -148,7 +148,10 @@ db.getCollection( 'user' ).find( { age : { $eq:5 } } )
 Actualiza un documento:
 
 ```
-db.collection.updateOne({_id:ObjectID('444c4d4..d4')},{$set:{qty:130}})
+db.collection.updateOne(
+	{_id:ObjectID('444c4d4..d4')},
+	{$set:{qty:130}}
+)
 ```
 
 Se recibe un JSON para actualizar:
@@ -216,12 +219,8 @@ _Se puede consultar la documentación de MongoDB [Proyecciones](https://docs.mon
 Partiendo de la siguiente colección de ejemplo:
 
 ```
-{ _id  : '1',
-  name : 'Renato Cacho',
-  rides: 10 },
-{ _id  : '2',
-  name : 'Sergio Robles',
-  rides: 7 }
+{ _id  : '1', name : 'Renato Cacho', rides: 10 },
+{ _id  : '2', name : 'Sergio Robles', rides: 7 }
 ```
 
 Este sería un ejemplo de agregación:
@@ -232,7 +231,8 @@ db.users.aggregate([{
     $group: {
         _id: “001”,
        totalRides: { $sum: “$rides” }
-    }}])
+    }
+}])
 ```
 
 _Se puede consultar la documentación de MongoDB [Agregaciones](https://docs.mongodb.com/manual/aggregation/) para mayor información._
@@ -243,7 +243,7 @@ _Se puede consultar la documentación de MongoDB [Agregaciones](https://docs.mon
 Para buscar en texto primero debemos crear un indice en el campo de texto en el que queremos buscar:
 
 ```
-db.users.createIndex({name: 'text'})	
+db.users.createIndex( { name: 'text' } )	
 ```
 
 La búsqueda usando el índice se haría de la siguiente manera:
