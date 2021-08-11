@@ -2,12 +2,18 @@
 
 _Memoria de comandos para MongoDB_
 
-## Table of Contents
+## Tabla de Contenido
 
 1. [ Creación de usuarios ](#creacion)
 2. [ Manejo de la Base ](#manejo)
 3. [ Insert ](#insertar)
-4. [ Importar y Exportar ](#importar)
+4. [ Find ](#buscar)
+5. [ Update ](#actualizar)
+6. [ Delete ](#borrar)
+7. [ Proyecciones ](#proyeccion)
+8. [ Agregaciones ](#agregacion)
+9. [ Índices ](#indices)
+10. [ Importar y Exportar ](#importar)
 
 <a name="creacion"></a>
 ## Creación de usuarios
@@ -88,6 +94,185 @@ Insertar con una instrucción un arreglo de JSONs:
 ```
 db.collection.insertMany([{ ... }, { ... }])	
 ```
+
+<a name="buscar"></a>
+## Find
+
+
+Muestra un documento de la colección:	
+
+```
+db.collection.findOne()	
+```
+
+Muestra todos los documentos que cumplan con el filtro:	
+
+```
+db.collection.find( { status:"A" } )
+```
+
+Cuenta los registros:
+
+```
+db.collection.find( { status:"A" } ).count()
+```
+
+Lee los documentos en base a los criterios de consulta, si no se especifican los <campos devueltos> se mostraran todos. Puede incluir lo siguiente en el filtro [Query](https://docs.mongodb.com/manual/reference/operator/query/):
+
+```
+db.<colección>.find(	
+     {<criterios de consulta>},		
+     {<campos devueltos>}	
+).limit(<n max de documentos devueltos>)
+```
+
+Ejemplo: Busca en la coleccion los mayores de 18, solo mostrar los campos name y address, solo traer 5:
+
+```
+db.collection.find(
+     { age: {$gt:18} },
+     { name:1, address:1 }
+).limit(5)
+```
+
+Tambien se puede usar el comando para traer la colección:
+
+```
+db.getCollection( 'user' ).find( { age : { $eq:5 } } )		
+```
+
+<a name="actualizar"></a>
+## Update
+
+
+Actualiza un documento:
+
+```
+db.collection.updateOne({_id:ObjectID('444c4d4..d4')},{$set:{qty:130}})
+```
+
+Se recibe un JSON para actualizar:
+	
+```
+db.<colección>.updateMany(
+    {<condiciones filtro>},
+    { $set: <JSON valores a actualizar>}
+)
+```
+
+Ejemplo.  A todos los usuarios mayores de 18 se pondra estatus rechazados:
+
+```
+db.users.updateMany(
+    {age:{$lt:18} },
+    {$set:{status:"reject" } }
+)
+```
+
+<a name="borrar"></a>
+## Delete
+
+Borra el primer documento que cumplan con el filtro:
+
+```
+db.collection.deleteOne({status:"A"})	
+```
+
+Borra todos los documentos de la base de datos:
+
+```
+db.collection.deleteMany({})	
+```
+
+Puede incluir los siguientes operadores en la condicion [Operadores](https://docs.mongodb.com/manual/reference/operator/update/): 
+
+```
+db.<colección>.deleteMany(
+    {<condiciones filtro>}
+)
+```
+
+<a name="proyeccion"></a>
+## Proyecciones
+
+Ejemplo de una proyección, por defecto trae 20 registros si no se especifica:
+
+
+```
+"db.getCollection(<colección>).find(
+    {<criterios de selección>},
+    {<proyección>}
+).limit(<n>)
+.sort({<campos de ordenamiento>})"
+```
+
+_Se puede consultar la documentación de MongoDB [Proyecciones](https://docs.mongodb.com/manual/tutorial/query-documents/#specify-conditions-using-query-operators) para mayor información._
+
+
+
+<a name="agregacion"></a>
+## Agregaciones
+
+Partiendo de la siguiente colección de ejemplo:
+
+```
+{ _id  : '1',
+  name : 'Renato Cacho',
+  rides: 10 },
+{ _id  : '2',
+  name : 'Sergio Robles',
+  rides: 7 }
+```
+
+Este sería un ejemplo de agregación:
+
+```
+db.users.aggregate([{
+    $match: {},
+    $group: {
+        _id: “001”,
+       totalRides: { $sum: “$rides” }
+    }}])
+```
+
+_Se puede consultar la documentación de MongoDB [Agregaciones](https://docs.mongodb.com/manual/aggregation/) para mayor información._
+
+<a name="indices"></a>
+## Índices
+
+Para buscar en texto primero debemos crear un indice en el campo de texto en el que queremos buscar:
+
+```
+db.users.createIndex({name: 'text'})	
+```
+
+La búsqueda usando el índice se haría de la siguiente manera:
+
+```
+db.users.find({
+    $text: {
+        $search: 'de',
+        $caseSensitive: true
+    }
+})
+```
+
+Para ver los índices:
+
+```
+db.users.getIndexes()	
+```
+
+Para configurar un Tiempo de vida en los documentos TTL:
+
+```
+db.<coleccion>.createIndex(
+    { <campo fecha>: 1 },
+    { expireAfterSeconds: <cantidad de segundos> }
+)	
+```
+
+_Se puede consultar la documentación de MongoDB [TTL](https://docs.mongodb.com/manual/core/index-ttl/) para mayor información._
 
 
 <a name="importar"></a>
