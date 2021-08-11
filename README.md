@@ -5,7 +5,9 @@ _Memoria de comandos para MongoDB_
 ## Table of Contents
 
 1. [ Creación de usuarios ](#creacion)
-2. [ Importar y Exportar ](#importar)
+2. [ Manejo de la Base ](#manejo)
+3. [ Insert ](#insertar)
+4. [ Importar y Exportar ](#importar)
 
 <a name="creacion"></a>
 ## Creación de usuarios
@@ -40,6 +42,53 @@ db.runCommand({
 ```
 
 _Se puede consultar la documentación de MongoDB [Enable Access Control](https://docs.mongodb.com/manual/tutorial/enable-authentication/) para mayor información._
+
+<a name="manejo"></a>
+## Manejo de la BD
+
+Para usar y crear una BD:
+
+```
+use database
+```
+
+Para crear una coleccion. Nota: Los documentos no pueden tener mas de 16MB.
+
+```
+db.createCollection("")
+```
+
+Para listar los posibles comandos que podemos ejecutar en una coleccion:
+
+```
+db.collection.help()	
+```
+
+<a name="insertar"></a>
+## Insert
+
+Insertar un solo documento JSON	:
+
+```
+db.collection.insertOne({json})	
+```
+
+Insertar con un Arreglo de JSONs:
+
+```
+"db.getCollection(<""coleccion"">).insert([
+    {<objeto JSON del documento>},
+    {<objeto JSON del documento>},
+    {<objeto JSON del documento>}
+])"	
+```
+
+Insertar con una instrucción un arreglo de JSONs:
+
+```
+db.collection.insertMany([{ ... }, { ... }])	
+```
+
 
 <a name="importar"></a>
 ## Importar y Exportar
